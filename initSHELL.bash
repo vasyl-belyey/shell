@@ -34,6 +34,10 @@ else
 	fi
 	if exists -f "$fil"; then
 		printColored yellow "\t adding to '" green "$fil" yellow "' ...\n\n"
+		echo "# VB: $(date)" >> "$fil"
+		echo "export PATH=$PATH" >> "$fil"
+		echo "# eof" >> "$fil"
+		. "$fil"
 	else
 		printColored yellow "\t adding to '" green "$fil" yellow "'" red " FAILED.\n\n"
 		exit 13
