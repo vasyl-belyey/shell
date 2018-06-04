@@ -14,6 +14,7 @@ doCMD "chmod +x *.bash"
 doCMD "chmod +x *.sh"
 . dirName.fun
 . printColored.fun
+. exists.fun
 #
 #
 # Main:
