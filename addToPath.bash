@@ -1,10 +1,12 @@
 #! /bin/bash
 #
 # Functions:
-if ! [ -f dirName.fun ]; then
-	printf "\n\t\t\t $(basename "$0") needs be run from its directory.\n\t\t First cd $(dirname "$0")\n\n"
-	exit 13
-fi
+# if ! [ -f dirName.fun ]; then
+# 	printf "\n\t\t\t $(basename "$0") needs be run from its directory.\n\t\t First cd $(dirname "$0")\n\n"
+# 	exit 13
+# fi
+cd "$(dirname "$0")"
+#
 . doCMD.fun
 doCMD "chmod +x *.fun"
 doCMD "chmod +x *.FUN"
