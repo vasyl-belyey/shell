@@ -1,11 +1,7 @@
 #! /bin/bash
 #
 # Functions:
-# if ! [ -f dirName.fun ]; then
-# 	printf "\n\t\t\t $(basename "$0") needs be run from its directory.\n\t\t First cd $(dirname "$0")\n\n"
-# 	exit 13
-# fi
-# cd "$(dirname "$0")"
+dirZ=$(pwd)
 if dirMY=$(find . -name shell); then cd "$dirMY"; fi
 #
 . isInteger.fun
@@ -20,7 +16,6 @@ doCMD "chmod +x *.sh"
 #
 #
 # Main:
-# dirZ=$(pwd)
 # dirMY=$(dirName "$0")
 dirMY=$(pwd)
 #
@@ -43,8 +38,10 @@ else
 		. "$fil"
 	else
 		printColored yellow "\t adding to '" green "$fil" yellow "'" red " FAILED.\n\n"
-		exit 13 # return 13
+		retCode=13
 	fi
 fi
 # END
+cd "$dirZ"
+return $retCode
 # eof
