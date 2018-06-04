@@ -1,29 +1,7 @@
 #! /bin/bash
 #
 # Functions:
-#
-. "dirName.fun"
-. "doCMD.fun"
-. "exists.fun"
-# . "$(vbShellDir.bash)""/askYN.fun"
-. askYNsilent.fun
-# . "$(vbShellDir.bash)""/askProceed.fun"
-# . "$(vbShellDir.bash)""/printFile.fun"
-# . "$(vbShellDir.bash)""/isMac.fun"
-. isInteger.fun
-# . "$(vbShellDir.bash)""/stringContains.fun"
-# . "$(vbShellDir.bash)""/indexOf.fun"
-. parseOption.fun
-# . "$(vbShellDir.bash)""/printSeconds.fun"
-. "printColored.fun"
-# . "$(vbShellDir.bash)""/printColoredOpt.fun"
-. "isSudoer.fun"
-# . "$(vbShellDir.bash)""/lsofVB.fun"
-# . "$(vbShellDir.bash)""/cursorGoTo.fun"
-# . "$(vbShellDir.bash)""/paPlay.fun"
-# . "$(vbShellDir.bash)""/maxOf.fun"
-# . "$(vbShellDir.bash)""/minOf.fun"
-# . "$(vbShellDir.bash)""/includeAll.fun"; (includeAll 2>/dev/null)
+. includeAll.fun
 #
 isInteractive() {
 	local arg=$fInteractive
