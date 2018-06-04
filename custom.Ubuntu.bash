@@ -178,7 +178,7 @@ fi
 # done
 oneLineCMD.bash "sudo apt-get update"
 #
-doCMD checkKworker 0 1
+# doCMD checkKworker 0 1
 #
 filpkgList=$(dirName "$0")/$(basename "$0").pkgList
 if ! exists -f "$filpkgList"; then
