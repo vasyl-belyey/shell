@@ -24,8 +24,8 @@ dirMY=$(dirName "$0")
 if [[ "$PATH" = *"$dirMY"* ]]; then
 	printColored green "This shell directory is already on PATH = '" yellow "$PATH" green "'.\n\n"
 else
-	printColored green "This shell directory is not on PATH = '" yellow "$PATH" green "'.\n\n"
 	export PATH=$dirMY:$PATH
+	printColored green "This shell directory is not on PATH = '" yellow "$PATH" green "'.\n\n"
 fi
 # END
 # eof
