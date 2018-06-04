@@ -23,10 +23,10 @@ doCMD() {
 		fi
 	fi
 	printf "\n\n\n"
-	printColored.bash blue "\tpwd = '""$(pwd)""':\n"
-	printColored.bash yellow "\t\t\tDoing '""$CMD""'...\n"
+	printColored blue "\tpwd = '""$(pwd)""':\n"
+	printColored yellow "\t\t\tDoing '""$CMD""'...\n"
 	if [ "$CMD" = "" ]; then
-		printColored.bash red "\n\n\n\t\t\tNo command to do.\n\n\n\n\n\n\n"
+		printColored red "\n\n\n\t\t\tNo command to do.\n\n\n\n\n\n\n"
 		exit 13
 	fi
 	# EXE:
@@ -34,15 +34,15 @@ doCMD() {
 	eval "$CMD"
 	retVal=$?
 	timing=$(( $(date +%s) - timing))
-	printColored.bash blue "\tpwd = '""$(pwd)""':\n"
+	printColored blue "\tpwd = '""$(pwd)""':\n"
 	# Checks:
 	local speakMsg="Done '""${CMD:0:13}""'."
 	if [ $retVal -eq 0 ]; then
-		printColored.bash green "\t\t\tDone  '""$CMD""' for ""$(printSeconds.bash $timing)"".\n\n\n"
+		printColored green "\t\t\tDone  '""$CMD""' for ""$(printSeconds.bash $timing)"".\n\n\n"
 	else
 		local aMsg="ERROR ""$retVal"" doing '""$CMD""'."
 		speakMsg="ERROR ""$retVal"" doing '""${CMD:0:13}""'."
-		printColored.bash red "\t\t\t""$aMsg""\n\n\n\n\n\n\n"
+		printColored red "\t\t\t""$aMsg""\n\n\n\n\n\n\n"
 		if [ $silent -eq 0 ]; then
 			Beep.sh 1 "$speakMsg"
 		fi
