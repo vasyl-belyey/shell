@@ -19,4 +19,7 @@
 # VB: 20180604:
 . parseOption.fun
 . isSudoer.fun
+. doCMD.fun
+. dirName.fun
+. exists.fun
 # eof
