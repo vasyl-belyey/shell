@@ -1,0 +1,1 @@
+stopWatch.bash -s27 -Vcock_stand -c0; sleep 3; stopWatch.bash -s37 -Vsnake_pose -c0; sleep 3; stopWatch.bash -s193 -Vwarm_up -c0; sleep 3; stopWatch.bash -s260 -Vhard_walk -c0; sleep 3; stopWatch.bash -s193 -Vcool_down -c1; sleep 3; stopWatch.bash -s37 -Vsix_pack -c0

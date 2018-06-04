@@ -1,0 +1,6 @@
+Do your excercises.
+rhythmbox --playlists-file=/home/vasyl/LydBoka.NB.20150701/NB.LydBoka.CD1.pls 2>/dev/null &
+Check Hann windowing is before maxima sorting.
+Edit parameters in heart beats parameter block - add filtering.
+Call Anton: programmer for Pinhole.
+Call Koloskov: programmer for Pinhole.

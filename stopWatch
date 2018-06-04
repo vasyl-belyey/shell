@@ -1,0 +1,186 @@
+#! /bin/bash
+#
+#
+checkRoyk() {
+	if [ $stopTS -le 0 ]; then return 0; fi
+	local exitCode
+	local grpOut
+	grpOut="$(echo "$1" | grep "Røyk")"
+	exitCode=$?
+	# printColored.bash red "\n\n\n\t\t\tDEBUG: arg1 = '""$1""'\n\n\n"
+	# printColored.bash red "\n\n\n\t\t\tDEBUG: exitCode = '""$exitCode""'\n\n\n"
+	if [ $exitCode -eq 0 ]; then
+		# local nCS=$((3600 * 20))
+		local nCS=$stopTS
+		# printColored.bash red "\n\n\n\t\t\tDEBUG: nCS = '""$nCS""'\n\n\n"
+		local nS="$(date +"%s")"
+		nS=$(( nS % (3600*24) ))
+		# printColored.bash red "\n\n\n\t\t\tDEBUG: nS UT = '""$nS""'\n\n\n"
+		# local tZone="$(date +"%z")"
+		local tZone="+100"
+		# printColored.bash red "\n\n\n\t\t\tDEBUG: tZone = '""$tZone""'\n\n\n"
+		tZone=$(( (tZone / 100)*3600 ))
+		# printColored.bash red "\n\n\n\t\t\tDEBUG: tZone SEC = '""$tZone""'\n\n\n"
+		nS=$((nS + tZone))
+		# printColored.bash red "\n\n\n\t\t\tDEBUG: nS = '""$nS""'\n\n\n"
+		# printColored.bash red "\n\n\n\t\t\tDEBUG: nLEFT = '""$((nCS - nS))""'\n\n\n"
+		if [ $nS -gt $nCS ]; then
+			printColored.bash red "\n\n\n\t\t\tTIME: ""$(date +"%H:%M:%S")"" - EXITTING\n\n\n"
+			Beep.sh 3 "Exitting"
+			exit 0
+		fi
+	fi
+}
+#
+doBeep() {
+	nBeeps=3; if [ $# -gt 0 ]; then nBeeps=$1; fi
+	answer=$(Beep.sh "$nBeeps" "$2")
+	errCode=$?
+	##########	printf "\t\t\terrCode = %d\n" $errCode
+	if [ $errCode -ne 0 ]; then
+		printf "\a\a\a"
+	fi
+}
+#
+printSeconds() {
+	nS=$1
+	let nH=$nS/3600
+	let z=$nH*3600
+	let nS=$nS-$z
+	let nM=$nS/60
+	let z=$nM*60
+	let nS=$nS-$z
+	printf "\r%13s%02d:%02d:%02d" " " $nH $nM $nS
+	#
+	if [ "$2" != "" ]; then
+		nS=$2
+		let nH=$nS/3600
+		let z=$nH*3600
+		let nS=$nS-$z
+		let nM=$nS/60
+		let z=$nM*60
+		let nS=$nS-$z
+		local aColor="green"
+		if [ $nH -lt 1 ]; then
+			aColor="yellow"
+			if [ $nM -lt 30 ]; then
+				aColor="red"
+			fi
+		fi
+		setTextAttributes.bash bold $aColor
+		printf " / %02d:%02d:%02d" $nH $nM $nS
+		if [ "$aMessage" != "" ]; then
+			printf "\tto '%s'\t" "$aMessage"
+		fi
+		setTextAttributes.bash
+	fi
+	printf "%13s" " "
+}
+#
+modulo() {
+	if [ "$1" = "" ] || [ "$2" = "" ]; then
+		#echo ""
+		ret=-1
+	else
+		x=$1
+		y=$2
+		let ret=$x/$y
+		let ret=$ret*$y
+		let ret=$x-$ret
+		#echo $ret
+	fi
+}
+#
+clear
+# Usage line:
+usageLine="$(basename "$0") [nMinsToCountDown [autoRestart=(0|\"\")|1 [aMessageText [stopTimeSECONDS]]]]"
+#
+if [ "$4" = "" ]; then
+	stopTS=-1
+else
+	stopTS="$4";
+	if ! isInteger.bash "$stopTS"; then
+		printUsage.bash "$usageLine" "Arg. stopTimeSECONDS must be integer, not '""$stopTS""'."
+		exit 13
+	fi
+fi
+#
+increment=1
+iS=0
+par2="$2"
+if [ ${#par2} -eq 0 ] || [ $par2 -eq 0 ]; then autoReStart=0; else autoReStart=1; fi
+aMessage0="$3"
+aMessage="$(setTextAttributes.bash bold green)""$3""$(setTextAttributes.bash)"
+aMessageLine="$(setTextAttributes.bash bold green)""$aMessage""$(setTextAttributes.bash)"
+if [ "$1" = "" ]; then
+	readTimeOut=0 #1 # sec
+	sigN=0
+	printf "\n\n\n\n\n\n\n%s  since %s\n\n\n\n\n\n\n" "$(basename "$0")" "$(date "+%T on %Y-%m-%d")"
+else
+	readTimeOut=0 # sec
+	if isInteger.bash $1; then
+		let sigN=$1*60
+		printf "\n\n\n\n\n\n\n%s every %s min.  since %s.  Auto re-start: %d.\n\n\n\n\n\n\n" "$(basename "$0")" "$1" "$(date "+%T on %Y-%m-%d")" $autoReStart
+	else
+		par1="$1"
+		if [ "${par1:0:1}" = "-" ]; then
+			printUsage.bash "$usageLine"
+		else
+			printUsage.bash "$usageLine" "Integer (or \"-\") nMinsToCountDown is expected (not '$1')"
+		fi
+		exit 13
+	fi
+fi
+#
+readTimeOut=1; increment=$((increment - readTimeOut));
+#
+while [ true ]
+do
+	#
+	checkRoyk "$3"
+	#
+	sleep $increment
+	let iS=$iS+$increment+$readTimeOut
+	if [ $sigN -eq 0 ]; then
+		printSeconds $iS
+		#############printf "\t\t\t(Press 'r' to re-start)  "
+		#############rEnter=""
+		#############read -s -t $readTimeOut rEnter
+		##############printf "rEnter='%s'" "$rEnter"
+		#############if [ "$rEnter" = "r" ]; then
+		#############	let iS=0
+		#############fi
+	else
+		let iRem=$sigN-$iS
+		printSeconds $iS $iRem
+		printColored.bash yellow "   'q' to quit, 'r' to restart: "
+		read -n 1 -t $readTimeOut aCommand
+		if [ "$aCommand" = "q" ]; then
+			printf "\n\n\n"
+			exit 13
+		else
+			if [ "$aCommand" = "r" ]; then
+				iS=0
+			fi
+		fi
+	fi
+	if [ $sigN -gt 0 ]; then
+		modulo $iS $sigN
+		if [ $ret -eq 0 ]; then
+			if [ $autoReStart -eq 0 ]; then
+				if [ "$aMessage" != "" ]; then printf "   '%s'   " "$aMessageLine"; fi
+				doBeep 33 "$aMessage0"
+				#   wishVB.wish " " "$aMessage" " "
+				printf "\tat %s   Hit ENTER to restart, q to quit: " "$(date "+%T")"
+				read answer
+				if [ "$answer" = "q" ]; then exit 0; fi
+			else
+				printf "\n\tDONE(%s)/re-started: %s" "$2" "$(date "+%T on %Y-%m-%d")"
+				if [ "$aMessage" != "" ]; then printf "   '%s'   " "$aMessageLine"; fi
+				printf "\n"
+				doBeep 1 "$aMessage0"
+			fi
+			iS=0
+		fi
+	fi
+done
