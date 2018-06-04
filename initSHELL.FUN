@@ -7,7 +7,6 @@
 # fi
 # cd "$(dirname "$0")"
 if dirMY=$(find . -name shell); then cd "$dirMY"; fi
-return 13
 #
 . isInteger.fun
 . doCMD.fun
