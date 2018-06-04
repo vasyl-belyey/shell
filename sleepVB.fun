@@ -10,6 +10,7 @@ sleepVB() {
 # Init:
 local nameME=sleepVB
 local usageLine="Initiate: . ${nameME}.fun\n\tUsage:\n${nameME} [-n nSEC] [-C aCommand]\n\n\tnSEC - to sleep (default 3)\n\taCommand - a command to run in bgr"
+local aColor=red
 #
 # Checks:
 if [ "$1" = "-" ]; then
@@ -33,7 +34,16 @@ t0=$(date +%s); ((t0+=nSEC))
 echo
 if [ -z "${aCommand}" ]; then
 	for((t=t0 - $(date +%s); t>=0; t=t0 - $(date +%s) )); do
-		printColored red "\r$(printSeconds $t)                         "
+		if [ $((100*t/nSEC)) -ge 67 ]; then
+			aColor=red
+		else
+			if [ $((100*t/nSEC)) -le 33 ]; then
+				aColor=green
+			else
+				aColor=yellow
+			fi
+		fi
+		printColored ${aColor} "\r$(printSeconds $t)                         "
 		sleep 1
 	done
 fi
