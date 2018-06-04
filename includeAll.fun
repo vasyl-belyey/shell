@@ -17,4 +17,6 @@
 # }
 # 
 # VB: 20180604:
+. parseOption.fun
+. isSudoer.fun
 # eof
