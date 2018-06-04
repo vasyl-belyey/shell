@@ -5,7 +5,9 @@
 # 	printf "\n\t\t\t $(basename "$0") needs be run from its directory.\n\t\t First cd $(dirname "$0")\n\n"
 # 	exit 13
 # fi
-cd "$(dirname "$0")"
+# cd "$(dirname "$0")"
+find . -name shell
+return 13
 #
 . isInteger.fun
 . doCMD.fun
