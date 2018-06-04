@@ -1,0 +1,22 @@
+#! /bin/bash
+#
+#
+myName=$(basename "$0")
+myDir=$(dirname "$0")
+scriptName="$myDir""/""easiSTATUS.bash"
+if [ ! -f "$scriptName"  ]; then 
+    clear
+    printf "\n\n\n\t\t\tscript '%s' not found\n\n\n\n" "$scriptName"
+    exit 13 
+fi 
+echo $myName $myDir
+exit 13
+#
+clear
+#
+for((iRun=0; ; iRun++))
+do
+    sDT=$(date +"")
+done
+#
+# eof

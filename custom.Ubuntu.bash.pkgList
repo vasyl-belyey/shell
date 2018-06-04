@@ -1,0 +1,12 @@
+openssh-server
+java
+javac
+libusb-1.0-0-dev
+libphNativeLinux64.so
+libASICamera2.so
+70-asi-cameras.rules
+ppmtompeg
+gdrive-linux-x64
+docker
+espeak
+at

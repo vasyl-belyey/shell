@@ -1,0 +1,436 @@
+#! /bin/sh
+#
+#
+sizeOfDir() {
+	pcSize=$(du -k "$1" | tail -1)
+	pcSize=${pcSize%"$1"}
+	let pcSize=$pcSize
+	echo $pcSize
+}
+#
+trim0() {
+	s="$1"
+	key=$(indexOfIn " " "$s")
+	while [ $key == 1 ]
+	do
+		iL=${#s}
+		s=${s:1:iL}
+		key=$(indexOfIn " " "$s")
+	done
+	echo "$s"
+}
+#
+getFreeSpace() {
+	dirName="$1"
+	pcLine0=$(df -k "$dirName" | head -1)
+	pcSize=$(df -k "$dirName" | tail -1)
+	key="Available"
+	pcLine0=$(indexOfIn "$key" "$pcLine0")
+	let pcLine0--
+	key=${#key}
+	let key++
+	pcSize=${pcSize:$pcLine0:$key}
+	pcSize=$(trim0 "$pcSize")
+	let pcSize=$pcSize
+	echo $pcSize
+}
+#
+indexOfIn() {
+	#retVal=$(echo "$2" | grep -b -o "$1")
+	retVal=$(awk -v a="$2" -v b="$1" 'BEGIN{print index(a,b)}')
+	echo "$retVal"
+}
+#
+turnEASI_OnOff_Port() {
+	iPort=$2
+	iPow=$1
+	iStatus=$(statusEASI $iPort)
+	if [ $iStatus -ne $iPow ]
+	then
+		sStatus=$(curl http://easi:PolarBear1308@158.39.70.161/SetPower.cgi?p"$iPort""=""$iPow")
+	fi
+	iStatus=$(statusEASI $iPort)
+	echo $iStatus
+}
+#
+statusEASI() {
+	iPortNo=$1
+	statusX=$(curl http://easi:PolarBear1308@158.39.70.161/GetPower.cgi)
+	key="P""$iPortNo"":"
+	iKeyLength=${#key}
+	iKey=$(indexOfIn "$key" "$statusX")
+	let iKeyPosition=$iKey+$iKeyLength-1
+	statusX=${statusX:$iKeyPosition:1}
+	echo "$statusX"
+}
+#
+askYN() {
+        answer=""
+        while [ "$answer" != "y" ] && [ "$answer" != "n" ]
+        do
+                echo; echo; echo
+                read -p "$1"" (y/n) " answer
+        done
+}
+#
+echoHigh() {
+        echo; echo; echo;
+        echo "$1"
+        if [ "$2""." != "." ]
+                then
+                        echo; echo; echo;
+        fi
+}
+#
+execCMD() {
+        echo; echo; echo
+        if [ "$1""." != "." ]
+                then
+                        CMD="$1"
+        fi
+        if [ "$CMD". == "." ]
+                then
+                        echo "No command given"
+                        exit
+                else
+                        echo "Executing '""$CMD""'..."
+                        $CMD
+                        iExitCode=$?
+                        echo "Exit code = ""$iExitCode"
+                        if [ $iExitCode -eq 0 ]
+                                then
+                                        echo;
+                                else
+                                        if [ "$2""." = "." ]
+                                                then
+                                                        echo; echo; echo
+                                                        exit $iExitCode
+                                        fi
+                        fi
+                        echo "'""$CMD""' done."
+        fi
+echo; echo; echo
+}
+#
+initDRVR() {
+	echoHigh "Initializing driver '""$drvr""'..."
+	CMD="./vbEchotek.py"
+	echo "$CMD"
+	$CMD
+}
+#
+checkDriver() {
+	drvr="/dev/windrvr6"
+	if [ -c "$drvr" ]; then
+		echoHigh "Driver '""$drvr""' already initialized."
+		askYN "   Re-initialize ""$drvr"" ?"
+		if [ "$answer" = "y" ]; then
+			initDRVR
+		fi
+	else
+		initDRVR
+	fi
+}
+#
+usage() {
+	echo "Usage:"
+	echo "$0"" [expName]"
+}
+#
+makeDir() {
+	if [ ! -d "$1" ]; then
+		echo "   Creating directory '""$1""'..."
+		execCMD "mkdir ""$1"
+	else
+		echo "   Directory '""$1""' exists."
+	fi
+}
+#
+hoursToSeconds() {
+	let pcNsec=$1*3600
+}
+#
+getNsec() {
+	retVal=24
+	let pcNsec=$retVal*3600
+	askYN "Manual stop recording (Ctrl-C or after ""$retVal"" hours)"
+	if [ "$answer" != "y" ]; then
+		read -p "Stop after H hours (integer only): " answer
+		if [ "$answer" != "" ]; then
+			retVal=$answer
+			#hoursToSeconds $retVal
+			let pcNsec=$answer*3600
+		else
+			read -p "Stop after M minutes (integer only): " answer
+			if [ "$answer" != "" ]; then
+				let pcNsec=$answer*60
+			else
+				read -p "Stop after S seconds (integer only): " answer
+				if [ "$answer" != "" ]; then
+					let pcNsec=$answer*1
+				fi
+			fi
+		fi
+	fi
+	echoHigh "	Okay, stopping after ""$pcNsec"" seconds." 1
+}
+#
+getStartTime() {
+	startH=""; startM=""; startS=""
+	askYN "Manual start recording?"
+	if [ "$answer" != "y" ]; then
+		answer=""
+		while [ "$startH" = "" ] || [ "$startM" = "" ] || [ "$startS" = "" ]
+		do
+			cT=$(date -u "+%T UT")
+			read -p "             Now: ""$cT"".  Start at hh:mm:ss UT (integers only): " answer
+			startH=`echo $answer | cut -b'1-2'`
+			startM=`echo $answer | cut -b'4-5'`
+			startS=`echo $answer | cut -b'7-8'`
+		done
+	fi
+}
+#
+waitForEnter() {
+	pcMSG="			Hit 'Enter' ""$1"" "
+	read -p "$pcMSG" answer
+}
+#
+waitForStartTime() {
+	if [ "$startH" != "" ]; then
+		echo; echo; echo
+		echo " Waiting for "$(printf "%02d:%02d:%02d UT..." $startH $startM $startS)
+		cH=$(date -u "+%H")
+		cM=$(date -u "+%M")
+		cS=$(date -u "+%S")
+		while [ $cH -lt $startH ] || [ $cM -lt $startM ] || [ $cS -lt $startS ]
+		do
+			printf "\r%13s%s UT%13s" " " $(date -u "+%T") " "
+			cH=$(date -u "+%H")
+			cM=$(date -u "+%M")
+			cS=$(date -u "+%S")
+		done
+	else
+		waitForEnter "to start recording..."
+	fi
+	# pass
+	startTime=$(date -u "+on %Y-%m-%d at %T UT")
+	# Log:
+	pcMSG=":START: ""$startTime"": ""$expName"": data taken by user :""$USER"": on:""$hostName"": in :""$rawDataDir"":"
+	echo "$pcMSG" >> "$logFile"
+	#
+	echoHigh "       ""$pcMSG" 1
+}
+#
+runDistributor() {
+	getNsec
+	getStartTime
+	#
+	rawDataDir="$expDataDir""/"$(date "+%Y-%m-%d/")
+	makeDir "$rawDataDir"
+	echoHigh "   Copying config.txt to '""$rawDataDir""'..."
+	CMD="cp -p config.txt ""$rawDataDir"
+	execCMD "$CMD"
+	# Log file:
+	logFile="$rawDataDir""/start-stop.log.txt"
+	# Wait:
+	waitForStartTime
+	# Status:
+	echo "Running since ""$startTime"".  EXP:""$expName"": data in :""$rawDataDir"":" > "$statusFile"
+	# RUN:
+	runCMD="$(pwd)""/distributor_VB.""$expName"" -c 30.0 -f -p "$expDataDir" -t ""$pcNsec"
+	echoHigh "Running distributor:"
+	echo "$runCMD"
+	$runCMD
+}
+#
+getDistributorPID() {
+	retVal=$(top -b -n 1 | grep "distributor_VB")
+	if [ ${#retVal} -eq 0 ]
+	then
+		retVal=0
+	else
+		iPos=$(indexOfIn " " "$retVal")
+		let iPos--
+		retVal=${retVal:0:$iPos}
+	fi
+	echo "$retVal"
+}
+#
+#
+clear
+#
+# step -1: Check if DistributorVB already running:
+pidEASI=$(getDistributorPID)
+if [ $pidEASI -ne 0 ]
+then
+	echoHigh "			EASI already running!	PID=""$pidEASI"
+	echoHigh "$(top -b -n 1 | grep distributor_VB)" 1
+	exit
+fi
+#
+cDir=$(pwd)
+echoHigh "USER = '""$USER""' in pwd = '""$cDir""'" 1
+#
+#etDir="/home/""$USER""/Desktop/Echotec/vasyl"
+etDir="/home/easi/Desktop/Echotec/vasyl"
+if [ "$cDir" != "$etDir" ]; then
+	execCMD "cd ""$etDir"
+	pwd
+fi
+# step 0: check arguments
+expName="$1"
+if [ "$expName" = "" ]; then
+	usage
+	read -p "Enter expName: " expName
+fi
+# check available experiments
+expList="expList.txt"
+expExists=0
+if [ -f "$expList" ]; then
+	echo "Checking available experiments..."
+	while read eName
+	do
+		if [ "$eName" != "" ]; then
+			echo "Checking '""$eName""'..."
+			exeFile="distributor_VB.""$eName"
+			if [ -x "$exeFile" ]; then
+				echo "Executable '""$exeFile""' exists."
+				if [ "$expName" = "$eName" ]; then
+					expExists=1
+				fi
+			else
+				echo "Executable '""$exeFile""' does not exist."
+			fi
+		fi
+	done < "$expList"
+else
+	echo "Experiment list file expList '""$expList""' does not exist."
+	exit 1
+fi
+#
+if [ $expExists -eq 0 ]; then
+	echo "Experiment '""$expName""' is not ready."
+	exit 1
+else
+	# check config file
+	echo "Experiment '""$expName""' is ready."
+	cfgFile="config.""$expName"".txt"
+	if [ ! -f "$cfgFile" ]; then
+		echo "Configuration file '""$cfgFile""' not found."
+		exit 1
+	else
+		# copy config file
+		echoHigh "Copying configuration file '""$cfgFile""'..."
+		if [ -f "config.txt" ]
+		then
+			execCMD "rm -f config.txt"
+		fi
+		execCMD "cp -pf ""$cfgFile"" config.txt"
+		execCMD "chmod +w config.txt"
+		#execCMD "chown easi config.txt"
+	fi
+fi
+#
+# initialize:
+hostName="$HOSTNAME"
+if [ "$hostName" = "" ]; then
+	hostName="$HOST"
+fi
+if [ "$hostName" = "polyxo.phys.uit.no" ]; then
+	hostName="Blixten (158.39.70.243)"
+fi
+# check/make output directory
+archiveDataDir="/data/""$expName""/"
+rootDataDir="/home/""$USER""/testData"
+makeDir "$rootDataDir"
+statusFile="$rootDataDir""/EASI.status.txt"
+expDataDir="$rootDataDir""/""$expName"
+makeDir "$expDataDir"
+# DEBUG
+iK=$(getFreeSpace "$expDataDir")
+let iH=$iK/1024/1024
+echoHigh "$iK"" kB free in ""$expDataDir"" (roughly ""$iH"" hours)" 1
+#
+# step 0: turn on RAL receivers
+echoHigh "	Checking RAL receiver status..."
+statusRAL=$(statusEASI 2)
+if [ $statusRAL -ne 1 ]
+then
+	askYN "		RAL receiver is OFF.  Turn it ON (can take a couple of minutes)?"
+	if [ "$answer" = "y" ]; then
+		statusRAL=$(turnEASI_OnOff_Port 1 2)
+		if [ $statusRAL -ne 1 ]
+		then
+			echoHigh "Error turning RAL on." 1
+			exit 1
+		fi
+	fi
+else
+	echoHigh "RAL receiver is already ON." 1
+fi
+#
+# step 1: check/initialize driver /dev/windrvr6
+checkDriver
+#
+# step 2: run distributor
+runDistributor
+#
+# Distributor stopped:
+	# Status:
+	echo "Stopped ""$startTime"".  EXP:""$expName"": data in :""$rawDataDir"":" > "$statusFile"
+	# Log:
+	stopTime=$(date -u "+on %Y-%m-%d at %T UT")
+	pcMSG=":STOP : ""$stopTime"": ""$expName"": data taken by user :""$USER"": on:""$hostName"": in :""$rawDataDir"":"
+	iSize=$(sizeOfDir "$rawDataDir")
+	pcMSG="$pcMSG"" total :""$iSize"" kB"
+	echo "$pcMSG" >> "$logFile"
+	echoHigh "       ""$pcMSG" 1
+	#
+#
+# step 3: turn off RAL receivers
+echoHigh "	Checking RAL receiver status..."
+statusRAL=$(statusEASI 2)
+if [ $statusRAL -ne 0 ]
+then
+	askYN "		RAL receiver is ON.  Turn it OFF (can take a couple of minutes)?"
+	if [ "$answer" = "y" ]; then
+		statusRAL=$(turnEASI_OnOff_Port 0 2)
+		if [ $statusRAL -ne 0 ]
+		then
+			echoHigh "Error turning RAL off." 1
+		fi
+	fi
+else
+	echoHigh "RAL receiver is already OFF." 1
+fi
+#
+# step 4: copy data to archive
+askYN "		Copy data from ""$rawDataDir"" to archive (""$archiveDataDir"")"
+if [ "$answer" = "y" ]
+then
+	makeDir "$archiveDataDir"
+	CMD="cp -prv ""$rawDataDir"" ""$archiveDataDir"
+	echo "$CMD"
+	$CMD
+	if [ $? -eq 0 ]
+	then
+		askYN "		Remove data from ""$rawDataDir"
+		if [ "$answer" = "y" ]
+		then
+			CMD="rm -R ""$rawDataDir"
+			echo "$CMD"
+			$CMD
+			if [ $? -ne 0 ]
+			then
+				echoHigh "	WARNING: command '""$CMD""' failed."
+				waitForEnter
+			fi
+		fi
+	fi
+fi
+#
+echoHigh "	Thanks, ""$USER"", for a successful run.  See you." 1
+exit 0
+# end
+# eof
