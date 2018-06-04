@@ -1,5 +1,6 @@
 # if (doCMD "ls" 1>/dev/null 2>/dev/null); then return; fi
-. "isInteger.fun"
+. isInteger.fun
+. printColored.fun
 # . sleepVB.fun
 # echo "'${0#-}' src '${BASH_SOURCE}'"
 doCMD() {
@@ -61,3 +62,4 @@ doCMD() {
 	fi
 	return $retVal
 }
+# eof
