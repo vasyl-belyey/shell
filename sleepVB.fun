@@ -4,28 +4,7 @@
 #
 # Functions:
 #
-. "doCMD.fun"
-. "exists.fun"
-. "askYN.fun"
-. "askYNsilent.fun"
-. "askProceed.fun"
-. "printFile.fun"
-. "isMac.fun"
-. "isInteger.fun"
-. "stringContains.fun"
-. "indexOf.fun"
-. "parseOption.fun"
-. "printSeconds.fun"
-. "printColored.fun"
-. "printColoredOpt.fun"
-. "isSudoer.fun"
-. "lsofVB.fun"
-. "cursorGoTo.fun"
-. "paPlay.fun"
-. "maxOf.fun"
-. "minOf.fun"
-. "dirName.fun"
-# . "includeAll.fun"; (includeAll 2>/dev/null)
+. "includeAll.fun"
 #
 sleepVB() {
 # Init:
