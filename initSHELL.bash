@@ -21,10 +21,11 @@ dirZ=$(pwd)
 dirMY=$(dirName "$0")
 # echo " dirMY = '$dirMY'"
 #
-if ! [[ "$PATH" = *"$dirMY"* ]]; then
+if [[ "$PATH" = *"$dirMY"* ]]; then
 	printColored green "This shell directory is already on PATH = '" yellow "$PATH" green "'.\n\n"
 else
 	printColored green "This shell directory is not on PATH = '" yellow "$PATH" green "'.\n\n"
+	export PATH=$dirMY:$PATH
 fi
 # END
 # eof
