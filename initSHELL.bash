@@ -7,6 +7,7 @@
 # fi
 cd "$(dirname "$0")"
 #
+. isInteger.fun
 . doCMD.fun
 doCMD "chmod +x *.fun"
 doCMD "chmod +x *.FUN"
