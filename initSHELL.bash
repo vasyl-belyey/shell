@@ -41,7 +41,7 @@ else
 		. "$fil"
 	else
 		printColored yellow "\t adding to '" green "$fil" yellow "'" red " FAILED.\n\n"
-		return 13 # exit 13
+		exit 13 # return 13
 	fi
 fi
 # END
