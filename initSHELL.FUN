@@ -6,7 +6,7 @@
 # 	exit 13
 # fi
 # cd "$(dirname "$0")"
-find . -name shell
+if dirMY=$(find . -name shell); then cd "$dirMY"; fi
 return 13
 #
 . isInteger.fun
@@ -21,8 +21,9 @@ doCMD "chmod +x *.sh"
 #
 #
 # Main:
-dirZ=$(pwd)
-dirMY=$(dirName "$0")
+# dirZ=$(pwd)
+# dirMY=$(dirName "$0")
+dirMY=$(pwd)
 #
 if [[ "$PATH" = *"$dirMY"* ]]; then
 	printColored green "This shell directory is already on PATH = '" yellow "$PATH" green "'.\n\n"
