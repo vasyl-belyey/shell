@@ -1,5 +1,6 @@
 # if (doCMD "ls" 1>/dev/null 2>/dev/null); then return; fi
 . isInteger.fun
+. printSeconds.fun
 . printColored.fun
 # . sleepVB.fun
 # echo "'${0#-}' src '${BASH_SOURCE}'"
@@ -38,7 +39,7 @@ doCMD() {
 	# Checks:
 	local speakMsg="Done '""${CMD:0:13}""'."
 	if [ $retVal -eq 0 ]; then
-		printColored green "\t\t\tDone  '""$CMD""' for ""$(printSeconds.bash $timing)"".\n\n\n"
+		printColored green "\t\t\tDone  '$CMD' for " yellow "$(printSeconds $timing)" green ".\n\n\n"
 	else
 		local aMsg="ERROR ""$retVal"" doing '""$CMD""'."
 		speakMsg="ERROR ""$retVal"" doing '""${CMD:0:13}""'."
