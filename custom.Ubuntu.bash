@@ -32,6 +32,14 @@ checkPackage() {
 	local aPKG="$1"
 	printColored white "\t\t\t$aPKG : " yellow "checking ...\n"
 	case "$aPKG" in
+		gcloud-gsutil)
+			if pc=$(which gcloud 2>/dev/null) && pc=$(which gsutil 2>/dev/null); then
+				printColored white "$aPKG" green "  installed\n"
+			else
+				printColored white "\t\t$aPKG" red "  NOT installed."
+				return 13
+			fi
+		;;
 		# "libusb-1.0-0-dev")
 		libusb-1*)
 			if pc=$(sudo find / -name "libusb-1*.so" 2>/dev/null); then
@@ -113,6 +121,16 @@ installPackage() {
 	local aPKG="$1"
 	printColored white "\t\t\t$aPKG : " yellow "installing ...\n"
 	case "$1" in
+		gcloud-gsutil)
+			if [ -z "$CLOUD_SDK_REPO" ]; then
+				local fil="$HOME/.bash_aliases"
+				if ! exists -f "$fil"; then fil="$HOME/.bashrc"; fi
+				if ! exists -f "$fil"; then return 13; fi
+				echo "# VB: $(date)" >> "$fil"
+				echo "export CLOUD_SDK_REPO=\"cloud-sdk-$(lsb_release -c -s)\"; echo \"CLOUD_SDK_REPO = '$CLOUD_SDK_REPO'\"; echo" >> "$fil"
+				echo "# eof" >> "$fil"
+			fi
+		;;
 		gdrive-linux-*)
 			# local URL="https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA&export=download" fil="gdrive"
 			local URL="https://docs.google.com/uc?id=0B3X9GlR6EmbnQ0FtZmJJUXEyRTA" fil="gdrive"
