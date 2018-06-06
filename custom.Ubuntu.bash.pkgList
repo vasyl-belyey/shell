@@ -7,6 +7,7 @@ libASICamera2.so
 70-asi-cameras.rules
 ppmtompeg
 gdrive-linux-x64
+gcloud-gsutil
 docker
 espeak
 at
