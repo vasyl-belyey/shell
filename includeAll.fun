@@ -6,4 +6,6 @@
 . dirName.fun
 . exists.fun
 . sleepVB.fun
+. printColored.fun
+. printFile.fun
 # eof
