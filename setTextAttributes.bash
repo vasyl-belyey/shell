@@ -10,6 +10,7 @@
 #       40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
 #
 # Functions:
+. isInteger.fun
 #
 getColorName() {
 	local retVal
