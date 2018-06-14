@@ -5,13 +5,13 @@
 # . "$(vbShellDir.bash)""/doCMD.fun"
 # . "$(vbShellDir.bash)""/exists.fun"
 # . "$(vbShellDir.bash)""/askYN.fun"
-. askYNsilent.fun
+# . askYNsilent.fun
 # . "$(vbShellDir.bash)""/askProceed.fun"
 # . "$(vbShellDir.bash)""/printFile.fun"
-. "$(vbShellDir.bash)""/isMac.fun"
-. "$(vbShellDir.bash)""/parseOption.fun"
-. "$(vbShellDir.bash)""/indexOf.fun"
-. "$(vbShellDir.bash)""/isInteger.fun"
+# . "$(vbShellDir.bash)""/isMac.fun"
+# . "$(vbShellDir.bash)""/parseOption.fun"
+# . "$(vbShellDir.bash)""/indexOf.fun"
+# . "$(vbShellDir.bash)""/isInteger.fun"
 # . "$(vbShellDir.bash)""/stringContains.fun"
 #
 # Init:
