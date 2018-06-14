@@ -1,7 +1,7 @@
-. "$(vbShellDir.bash)""/isSudoer.fun"
-. "$(vbShellDir.bash)""/parseOption.fun"
-. "$(vbShellDir.bash)""/askYNsilent.fun"
-. "$(vbShellDir.bash)""/printColored.fun"
+# . "$(vbShellDir.bash)""/isSudoer.fun"
+# . "$(vbShellDir.bash)""/parseOption.fun"
+# . "$(vbShellDir.bash)""/askYNsilent.fun"
+# . "$(vbShellDir.bash)""/printColored.fun"
 lsofVB() {
 	# Main:
 	local usageLine="lsofVB [-p portNo] [-h hostIP=localhost] [-u user]"
