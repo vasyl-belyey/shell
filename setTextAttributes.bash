@@ -10,6 +10,7 @@
 #       40=black 41=red 42=green 43=yellow 44=blue 45=magenta 46=cyan 47=white
 #
 # Functions:
+#
 getColorName() {
 	local retVal
 		cNum=$1
@@ -72,7 +73,7 @@ fi
 #
 if [ $# -ge 2 ]; then
 	retVal="$retVal"";"
-	if isInteger.bash $2; then
+	if isInteger "$2"; then
 		retVal0="$(getColorName $2)"
 		retVal0="$(getColorNum "$retVal0")"
 		retVal0=$((retVal0+30))
@@ -86,7 +87,7 @@ fi
 #
 if [ $# -ge 3 ]; then
 	retVal="$retVal"";"
-	if isInteger.bash $3; then
+	if isInteger "$3"; then
 		retVal0="$(getColorName $3)"
 		retVal0="$(getColorNum "$retVal0")"
 		retVal0=$((retVal0+40))
