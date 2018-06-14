@@ -1,5 +1,3 @@
-. "$(vbShellDir.bash)"/indexOf.fun
-. "$(vbShellDir.bash)"/parseOption.fun
 printColoredOpt() {
 	# usageLine=printColoredOpt [-A+none|bold|underscore|blink|reverse|concealed] [-B+bgrColor] [-C+color] format args
 	local args=() arg
