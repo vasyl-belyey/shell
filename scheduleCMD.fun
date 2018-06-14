@@ -1,6 +1,6 @@
-. "$(vbShellDir.bash)""/parseOption.fun"
-. "$(vbShellDir.bash)""/printColored.fun"
-. "$(vbShellDir.bash)""/indexOf.fun"
+# . "$(vbShellDir.bash)""/parseOption.fun"
+# . "$(vbShellDir.bash)""/printColored.fun"
+# . "$(vbShellDir.bash)""/indexOf.fun"
 scheduleCMD() {
 echo "scheduleCMD: args[""$#""] = ""$*"
 	local usageLine="scheduleCMD aCommand [-Y YYYY] [-M MM] [-D DD] [-t hh:mm:ss || -t delaySECONDS]"
