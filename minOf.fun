@@ -1,4 +1,4 @@
-. "$(vbShellDir.bash)""/isInteger.fun"
+# . "$(vbShellDir.bash)""/isInteger.fun"
 maxOf() {
 	local retVal arg1="$1"
 	while [ ! -z "$arg1" ]; do
